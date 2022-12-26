@@ -1,0 +1,208 @@
+.gap
+{
+    margin-top: 1%;
+    margin-bottom: 1%;
+    padding-right: 2%;
+}
+
+.bottomgap
+{
+    margin-bottom: 3%;
+}
+
+#notes
+{
+    height: 580px;
+    width: 100%;
+    padding: 2% 2% 2% 2%;
+    font-family: 'Courier New', monospace;
+    border: 0.15vw solid #999;
+    overflow: auto;
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+  }
+::-webkit-scrollbar-track {
+    background: #555;
+  }
+::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+#notes:focus{
+    outline: none;
+}
+
+#body
+{
+    background-color: #666;
+    font-family: 'new-spirit', serif;
+    color: #e6e6e6;
+
+}
+
+#logout
+{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    color: black;
+}
+
+#loginbutton
+{
+    border: #e6e6e6;
+    background-color: #888;
+    color: #e6e6e6;
+}
+
+#registerbutton2
+{
+    border: #e6e6e6;
+    background-color: #888;
+    color: #e6e6e6;
+}
+
+#registerbutton
+{
+    color: black;
+}
+
+#filenametext
+{
+    background-color: #555;
+    color: #e6e6e6;
+}
+
+#newfilebutton
+{
+    background-color: transparent;
+}
+
+.editbox{
+    background-color: #555;
+    color: #e6e6e6;
+}
+
+#todo
+{
+    height: 300px;
+    width: 90%;
+    padding: 2% 2% 2% 2%;
+    border: 0.15vw solid #999;
+}
+
+#todo:focus{
+    outline: none;
+}
+
+
+#todo
+{
+    height: 225px;
+    overflow: auto;
+}
+
+#scribbles
+{
+    height: 250px;
+    width: 90%;
+    margin-top: 5%;
+    padding: 2% 2% 2% 2%;
+    background-color: #666;
+    color: white;
+    border: 0.15vw solid #999;
+}
+
+#scribbles:focus{
+    outline: none;
+}
+
+.checkbox
+{
+    accent-color: #555;
+}
+
+#leftcolumn
+{
+    width: 24%;
+    float: left;
+}
+
+#middlecolumn
+{
+    width: 50%;
+    float: left;
+    color: white;
+}
+
+#rightcolumn
+{
+    width: 24%;
+    float: left;
+    padding-left: 4%;
+}
+
+#rightmostcolumn
+{
+    width: 2%;
+    position: fixed;
+    top: 2%;
+    right: 0;
+}
+
+.button
+{
+    border: 0;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.crossbutton
+{
+    border: 0;
+    cursor: pointer;
+    background-color: transparent;
+    margin-left: -6%;
+    color: black;
+}
+
+.deletebutton
+{
+    margin-left: 3%;
+    cursor: pointer;
+    color: black;
+}
+
+.deletebutton:hover
+{
+    color: white;
+}
+
+.crossbutton:hover
+{
+    color: white;
+}
+
+.texteditors
+{
+    background-color: transparent;
+}
+
+#files
+{
+    border: 0;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.collapsible
+{
+    display: block;
+}
+
+.collapsible.active
+{
+    display: none;
+}

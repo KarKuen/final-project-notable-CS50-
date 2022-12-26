@@ -1,0 +1,433 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- http://getbootstrap.com/docs/5.1/ -->
+        <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" rel="stylesheet">
+        <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"></script>
+
+        <link href="/static/styles.css" rel="stylesheet">
+
+        <title>notable: {% block title %}{% endblock %}</title>
+
+    </head>
+
+    <body id="body" onload="fileindicator()">
+        <div class="gap"></div>
+        {% if session["user_id"] %}
+            <div id="leftcolumn">
+
+                <div id="foldercollapsible" class="collapsible">
+                    <form action="/" method="post" id="filenamefolder">
+                        <input id="filenametext" autocomplete="off" name="filename" placeholder="FileName" type="text">
+                        <button id="newfilebutton" type="submit">new file</button>
+                        <br>
+                        {% block files %}{% endblock %}
+                    </form>
+                </div>
+
+                <a class="nav-link" href="/logout" id="logout">Log Out</a>
+            </div>
+
+            <div id="middlecolumn">
+
+                <div>
+                    <button class="texteditors" id="underlinebutton">underline</button>
+                    <button class="texteditors" id="boldbutton">bold</button>
+                    <button class="texteditors" id="italicbutton">italic</button>
+                    <button class="texteditors" id="boxbutton">box</button>
+                    <button class="texteditors" id="listbutton">list</button>
+                </div>
+
+
+                <div contenteditable autofocus id="notes">
+                    {{ notes|safe }}
+                </div>
+            </div>
+
+            <div id="rightcolumn">
+
+                <div id="buttons" class="bottomgap collapsible">
+                    <button id="todobutton" class="button">TODO</button>
+                    <button id="scribblebutton" class="button">Scribbles</button>
+                    <button id="folderbutton" class="button">Folder</button>
+                </div>
+
+                <div id="todocollapsible" class="collapsible">
+                    <h4>TODO</h4>
+                    <div contenteditable id="todo">
+                        {{ todo|safe }}
+                    </div>
+                </div>
+
+                <div id="scribblecollapsible" class="collapsible">
+
+                    <div contenteditable id="scribbles">{{ scribbles|safe }}</div>
+
+                </div>
+
+            </div>
+
+            <div id="rightmostcolumn">
+                <button id="closebutton" class="button">▷</button>
+            </div>
+
+        {% else %}
+
+                <main class="container-fluid py-5 text-center">
+                    {% block main %}{% endblock %}
+                </main>
+
+            {% if get_flashed_messages() %}
+                <header>
+                    <div class="alert alert-primary mb-0 text-center" role="alert">
+                        {{ get_flashed_messages() | join(" ") }}
+                    </div>
+                </header>
+            {% endif %}
+        {% endif %}
+    </body>
+
+    {% if session["user_id"] %}
+        <script>
+            let buttons = document.getElementById('buttons');
+            document.getElementById('closebutton').addEventListener('click', function () {
+                buttons.classList.toggle('active');
+                let right = document.getElementById('rightcolumn');
+                let list = right.querySelectorAll('.active');
+                let mid = document.getElementById('middlecolumn');
+
+                if (list.length == 3) {
+                    if (folder.classList.contains('active') == false) {
+                        mid.style.width = '74%';
+                    }
+                    else {
+                        mid.style.width = '100%';
+                    }
+                }
+                else if (!(buttons.classList.contains('active'))) {
+                    if (folder.classList.contains('active') == false) {
+                        mid.style.width = '50%';
+                    }
+                    else {
+                        mid.style.width = '74%';
+                    }
+                }
+            })
+
+            let todo = document.getElementById('todocollapsible');
+            document.getElementById('todobutton').addEventListener('click', function () {
+                todo.classList.toggle('active');
+            })
+
+            let scribble = document.getElementById('scribblecollapsible');
+            document.getElementById('scribblebutton').addEventListener('click', function () {
+                scribble.classList.toggle('active');
+            })
+
+            function fileindicator() {
+                let range = document.querySelectorAll('#files').length;
+                let title = document.getElementsByTagName('title')[0].innerHTML;
+                let result = title.replace('notable: ','').trim();
+                for (let i=0; i < range; i++) {
+                    let file = document.querySelectorAll('#files')[i].defaultValue;
+                    if (file.localeCompare(result) == 0) {
+                        document.querySelectorAll('#files')[i].style.color = 'white';
+                    }
+                }
+            }
+
+            document.getElementById('todo').addEventListener('click', function checkboxindicator() {
+                let range = document.querySelectorAll('.checkbox').length;
+                for (let i=0; i < range; i++) {
+                    let checkbox = document.querySelectorAll('.checkbox')[i];
+                    if (checkbox.checked == true) {
+                        checkbox.setAttribute("checked", true);
+                    }
+                    else {
+                        checkbox.removeAttribute("checked");
+                    }
+                }
+            })
+
+            var doubleclick;
+            let range = document.querySelectorAll("#files").length;
+            for (let i=0; i < range; i++) {
+                let click = document.querySelectorAll("#files")[i];
+                click.addEventListener('click', function(event) {
+                    doubleclick = false;
+                    event.preventDefault();
+
+                    if (doubleclick == true) {
+                        click.parentNode.submit();
+                    }
+                    else {
+                        click.addEventListener('click', function() {
+
+                            doubleclick = true;
+
+                            var form = document.createElement("form");
+                            form.setAttribute("action","/");
+                            form.setAttribute("method","post");
+                            form.setAttribute("id","editing");
+
+                            var filename = click.value;
+                            var notesid = document.querySelectorAll("#fileidentification")[i].value;
+
+                            var input = document.createElement("input");
+                            input.setAttribute("name","newfilename");
+                            input.setAttribute("type","text");
+                            input.setAttribute("autocomplete","off");
+                            input.setAttribute("placeholder",filename);
+                            input.setAttribute("class","editbox");
+
+                            form.appendChild(input);
+
+                            var hidden = document.createElement("input");
+                            hidden.setAttribute("name","filenameref");
+                            hidden.setAttribute("type","hidden");
+                            hidden.setAttribute("value",notesid);
+
+                            form.appendChild(hidden);
+
+                            var cross = document.createElement("span");
+                            cross.setAttribute("id","crossbutton");
+                            cross.setAttribute("class","crossbutton");
+                            cross.setAttribute("value",filename);
+                            cross.setAttribute("onclick","deleteedit()");
+                            cross.innerHTML = "✖";
+
+                            form.appendChild(cross);
+
+                            var del = document.createElement("span");
+                            del.setAttribute("id","deletebutton");
+                            del.setAttribute("class","deletebutton");
+                            del.setAttribute("value",notesid);
+                            del.setAttribute("onclick","deletefile()");
+                            del.innerHTML = "Del";
+
+                            form.appendChild(del);
+
+                            let list = document.querySelectorAll("#filenamefolder")[i];
+                            list.insertBefore(form, click);
+                            click.setAttribute("type","hidden");
+                            }, {once: true})
+                    }
+
+                    setTimeout(function(){
+                        if (doubleclick == false) {
+                            click.parentNode.submit(); }}, 500);
+                }, {once: true})
+            }
+
+            function deletefile() {
+                let notesid = deletebutton.getAttribute("value");
+                const Formdata = new FormData();
+                Formdata.append("deletefile", notesid);
+
+                const XHR = new XMLHttpRequest();
+                XHR.open("POST", "https://karkuen-code50-109933795-jjpvjjjvv3j5pq-5000.preview.app.github.dev/");
+                XHR.send(Formdata);
+                window.location.reload();
+            }
+
+            function deleteedit() {
+                doubleclick = false;
+                let filename = crossbutton.getAttribute("value");
+                let filesrange = document.querySelectorAll("#files").length;
+                for (let k=0; k<filesrange; k++) {
+                    let input = document.querySelectorAll("#files")[k];
+                    let search = input.value;
+                    if (search == filename) {
+                        input.setAttribute("type","submit");
+                    }
+                }
+                crossbutton.parentNode.remove();
+            }
+
+            let folder = document.getElementById('foldercollapsible');
+            document.getElementById('folderbutton').addEventListener('click', function () {
+                folder.classList.toggle('active');
+                if (folder.classList.contains('active') == false) {
+                    document.getElementById('middlecolumn').style.width = '50%';
+                }
+                else {
+                    document.getElementById('middlecolumn').style.width = '74%';
+                }
+            })
+
+            document.getElementById('underlinebutton').addEventListener('click', function () {
+                let selection = document.getSelection().getRangeAt(0);
+                let element = document.createElement("u");
+                selection.surroundContents(element);
+            })
+
+            document.getElementById('boldbutton').addEventListener('click', function () {
+                let selection = document.getSelection().getRangeAt(0);
+                let element = document.createElement("b");
+                selection.surroundContents(element);
+            })
+
+            document.getElementById('italicbutton').addEventListener('click', function () {
+                let selection = document.getSelection().getRangeAt(0);
+                let element = document.createElement("i");
+                selection.surroundContents(element);
+            })
+
+            document.getElementById('listbutton').addEventListener('click', function () {
+                let selection = document.getSelection().getRangeAt(0);
+                let ulelement = document.createElement("ul");
+                let lielement = document.createElement("li");
+                selection.surroundContents(lielement);
+                selection.surroundContents(ulelement);
+            })
+
+            document.getElementById('boxbutton').addEventListener('click', function () {
+                let selection = document.getSelection().toString();
+
+                // returns all indexes of \n
+                var re = /\n/g;
+                var indices = [];
+                while ((match = re.exec(selection)) != null) {
+                    indices.push(+match.index);
+                }
+
+                // turns string into array
+                var wording = [];
+                for (words in selection){
+                    wording.push(selection[words]);
+                }
+
+                // finding longest line
+                var difference = [];
+                for (index in indices){
+                    var diff = indices[index];
+                    if (index != 0){
+                        diff = indices[index] - indices[index - 1];
+                    }
+                    difference.push(diff);
+                }
+                var last = wording.length - indices[indices.length - 1];
+                difference.push(last);
+                let longest = Math.max.apply(null, difference);
+
+                // adding the right-most |
+                var positioning = [];
+                var spacing = 0;
+                var prespacing = 0;
+                for (index in indices){
+                    var currentlen;
+                    if (index - 1 < 0){
+                        currentlen = indices[index];
+                        longest += 1;
+                    }
+                    else{
+                        currentlen = indices[index] - indices[index - 1] - 1;
+                    }
+
+                    prespacing = prespacing + spacing;
+                    spacing =  longest - currentlen - 1;
+
+                    for (let i = 0; i < spacing; i++){
+                        wording.splice(+indices[index] + i + +index + prespacing,0," ")
+                    }
+
+                    var pos;
+                    if (spacing < 0){
+                        pos = +indices[index] + +index  + prespacing;
+                    }
+                    else{
+                        pos = +indices[index] + +index + spacing + prespacing;
+                    }
+
+                    wording.splice(pos,0,"|");
+                    positioning.push(+pos);
+                }
+
+
+                // adding the first and last |
+                ending = wording.length - positioning[positioning.length - 1];
+                for (let i = 0; i < (longest + 1 - ending); i++){
+                    wording.push(" ");
+                }
+                wording.push("|");
+                wording.splice(0, 0, "|");
+
+                // adding the left-most |
+                for (pos in positioning){
+                    wording.splice(+positioning[pos] + +pos + 3, 0, "|");
+                }
+
+                // turn array back into string
+                var boxed = "";
+                for (x in wording){
+                    if (wording[x] == "\n"){
+                        boxed = boxed.concat("<br />");
+                    }
+                    boxed = boxed.concat(wording[x]);
+                }
+
+                // giving the top and bottom lines and new line
+                var topopening = "-";
+                for (let i = 0; i < longest; i++){
+                    topopening = topopening.concat("-");
+                }
+                var bottomopening = "-";
+                for (let i = 0; i < longest; i++){
+                    bottomopening = bottomopening.concat('-');
+                }
+
+                boxed = "<br />".concat(boxed);
+                boxed = topopening.concat(boxed);
+                boxed = "<br />".concat(boxed);
+                boxed = boxed.concat("<br />");
+                boxed = boxed.concat(bottomopening);
+                boxed = boxed.concat("<br />");
+
+                // find range of highlighted words, surrounding it with replace tag
+                selected = document.getSelection().getRangeAt(0);
+                const replace = document.createElement("replace");
+                replace.appendChild(selected.extractContents());
+                selected.insertNode(replace);
+
+                // changing the innerhtml
+                replace.innerHTML = boxed;
+
+            });
+
+            document.getElementById("todo").addEventListener('keypress', function(event) {
+                if (event.key === "Enter") {
+                    const todo = document.getElementById("todo");
+                    event.preventDefault();
+                    todo.insertAdjacentHTML("beforeend",'<br>' + '<input type="checkbox" class="checkbox">' + '&nbsp;');
+                    todo.focus();
+                    window.getSelection().selectAllChildren(todo);
+                    window.getSelection().collapseToEnd();
+                }
+            })
+
+            setInterval(function () {
+                const form = document.getElementById("notes").innerHTML;
+                const Formdata = new FormData();
+                Formdata.append("content", form);
+
+                const form1 = document.getElementById("scribbles").innerHTML;
+                Formdata.append("content1", form1);
+
+                const form2 = document.getElementById("todo").innerHTML;
+                Formdata.append("content2", form2);
+
+                const XHR = new XMLHttpRequest();
+                XHR.open("POST", "https://karkuen-code50-109933795-jjpvjjjvv3j5pq-5000.preview.app.github.dev/");
+                XHR.send(Formdata);
+
+            }, 5000);
+
+        </script>
+    {% endif %}
+
+</html>

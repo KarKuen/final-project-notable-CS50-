@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{session["filename"]}}
+{% endblock %}
+
+{% block files %}
+    {% for file in files %}
+        <form action="/" method="post" id="filenamefolder">
+            <input id="fileidentification" name="notes_id" type="hidden" value="{{ file["notes_id"] }}">
+            <input id="files" type="submit" value="{{file["filename"]}}">
+        </form>
+        <!--change and include note_id-->
+    {% endfor %}
+{% endblock %}
