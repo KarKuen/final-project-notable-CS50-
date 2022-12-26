@@ -1,2 +1,4 @@
-# final-project-notable-CS50-
-note-taking web application
+# final-project: notable (CS50)
+
+##### CS50 Week 10 Final Project
+* note-taking web application
